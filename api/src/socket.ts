@@ -1,5 +1,6 @@
 import { SocketUser } from "./types/types";
 import { Socket } from "socket.io";
+import { v4 as uuidv4 } from "uuid";
 const io = require("socket.io")(5000, {
   cors: {
     origin: "http://localhost:3000",
@@ -43,9 +44,32 @@ io.on("connection", (socket: Socket) => {
     io.to(sender?.socketId).emit("getMessage", messages);
   });
 
-  socket.on("audioCall", (data) => {
-    console.log(data);
-  });
+  socket.on(
+    "audiocall",
+    (data: { senderId: string; receiverId: string; peerId: string }) => {
+      const receiver = getUser(data.receiverId);
+      const roomId = uuidv4();
+      // socket.join(roomId);
+      console.log("Receiced vall", data, receiver);
+      io.to(receiver?.socketId).emit("gettingCall", {
+        roomId,
+        senderId: data.senderId,
+        peerId: data.peerId,
+      });
+    },
+  );
+
+  socket.on(
+    "acceptAudiocall",
+    (data: {
+      roomId: string;
+      callerId: string;
+      receiverId: string;
+      peerId: string;
+    }) => {
+      socket.join(data.roomId);
+    },
+  );
 
   // when disconnect
   socket.on("disconnect", () => {

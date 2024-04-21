@@ -1,17 +1,41 @@
-import { PhoneCallIcon, VideoIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useContext } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
 import { SocketContext } from "@/lib/context/context";
-
+import { PhoneCallIcon, VideoIcon } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { CallPover } from "./call-popover";
 export const InboxHeader = () => {
-  const { socket } = useContext(SocketContext);
+  const { socket, peer } = useContext(SocketContext);
+  const searchParams = useSearchParams();
+  const pathaname = usePathname();
+  const router = useRouter();
+  const userId = searchParams.get("id"); // sender id
+  const [caller, setCaller] = useState<any>(null);
+  const [reciever, setReciver] = useState<any>(null);
 
   const handleAudioCall = () => {
+    console.log(peer);
     socket.emit("audiocall", {
-      senderId: "1",
-      receiverId: "2",
+      senderId: userId,
+      receiverId: userId === "1" ? "2" : "1",
+      peerId: peer?.id,
+    });
+    setCaller({
+      senderId: userId,
     });
   };
+
+  useEffect(() => {
+    socket.on("gettingCall", (data) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("roomId", data.roomId);
+      setReciver({
+        recieverId: data.senderId,
+      });
+      router.push(`${pathaname}?${params.toString()}`);
+    });
+  }, []);
 
   return (
     <div className="flex justify-between items-center">
@@ -33,6 +57,10 @@ export const InboxHeader = () => {
         />
         <VideoIcon className="cursor-pointer" color="brown" />
       </div>
+
+      {caller && <CallPover type={"calling"} />}
+
+      {reciever && <CallPover type={"receiving"} />}
     </div>
   );
 };
