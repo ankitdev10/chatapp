@@ -22,7 +22,7 @@ export const CallPover = ({ type }: { type: "calling" | "receiving" }) => {
       roomId,
     });
 
-    let getUserMedia = await navigator?.mediaDevices?.getUserMedia;
+    let getUserMedia = navigator?.mediaDevices?.getUserMedia;
     getUserMedia({ video: true, audio: true }).then((stream) => {
       console.log({ stream });
       videoRef.current.srcObject = stream;

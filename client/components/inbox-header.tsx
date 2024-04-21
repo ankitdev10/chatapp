@@ -23,6 +23,7 @@ export const InboxHeader = () => {
     setCaller({
       senderId: userId,
     });
+    router.push(`call?id=${userId}`);
   };
 
   useEffect(() => {
