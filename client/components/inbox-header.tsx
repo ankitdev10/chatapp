@@ -1,7 +1,18 @@
 import { PhoneCallIcon, VideoIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useContext } from "react";
+import { SocketContext } from "@/lib/context/context";
 
 export const InboxHeader = () => {
+  const { socket } = useContext(SocketContext);
+
+  const handleAudioCall = () => {
+    socket.emit("audiocall", {
+      senderId: "1",
+      receiverId: "2",
+    });
+  };
+
   return (
     <div className="flex justify-between items-center">
       <div className="flex gap-4">
@@ -15,7 +26,11 @@ export const InboxHeader = () => {
         </div>
       </div>
       <div className="flex gap-6">
-        <PhoneCallIcon className="cursor-pointer" color="green" />
+        <PhoneCallIcon
+          onClick={() => handleAudioCall()}
+          className="cursor-pointer"
+          color="green"
+        />
         <VideoIcon className="cursor-pointer" color="brown" />
       </div>
     </div>

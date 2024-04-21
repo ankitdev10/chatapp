@@ -27,6 +27,7 @@ io.on("connection", (socket: Socket) => {
 
   // take userId and socket Id from user
   socket.on("addUser", (userId: string) => {
+    console.log("Adding user", userId);
     addUser(userId, socket.id);
     io.emit("getUsers", users);
   });
@@ -40,6 +41,10 @@ io.on("connection", (socket: Socket) => {
     const sender = getUser(senderId);
     console.log("first one emitted");
     io.to(sender?.socketId).emit("getMessage", messages);
+  });
+
+  socket.on("audioCall", (data) => {
+    console.log(data);
   });
 
   // when disconnect

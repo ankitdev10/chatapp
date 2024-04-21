@@ -28,7 +28,6 @@ export const AllMessages = () => {
 
   return (
     <div className="bg-white rounded-2xl h-1 flex-grow p-8 overflow-y-scroll space-y-4">
-      {userId === "1" ? "Ankit" : "Jenisha"}
       {allMessages?.length === 0 && (
         <div className="w-full flex items-center justify-center gap-3">
           <Frown />
