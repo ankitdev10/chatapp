@@ -15,7 +15,6 @@ export const InboxHeader = () => {
   const [reciever, setReciver] = useState<any>(null);
 
   const handleAudioCall = () => {
-    console.log(peer);
     socket.emit("audiocall", {
       senderId: userId,
       receiverId: userId === "1" ? "2" : "1",

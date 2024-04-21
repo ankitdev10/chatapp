@@ -1,3 +1,4 @@
+"use client";
 import {
   Dialog,
   DialogContent,
@@ -8,17 +9,23 @@ import {
 import { SocketContext } from "@/lib/context/context";
 import { PhoneForwarded } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useContext, useState } from "react";
-import { v4 as uuid } from "uuid";
+import { useContext, useRef, useState } from "react";
 export const CallPover = ({ type }: { type: "calling" | "receiving" }) => {
   const [open, setOpen] = useState(true);
   const { socket, peer } = useContext(SocketContext);
   const searchParams = useSearchParams();
   const roomId = searchParams.get("roomId");
-  const handleAcceptCall = () => {
+  const videoRef = useRef<any>();
+  const handleAcceptCall = async () => {
     socket.emit("acceptAudiocall", {
       peeId: peer?.id,
       roomId,
+    });
+
+    let getUserMedia = await navigator?.mediaDevices?.getUserMedia;
+    getUserMedia({ video: true, audio: true }).then((stream) => {
+      console.log({ stream });
+      videoRef.current.srcObject = stream;
     });
   };
   return (
@@ -33,10 +40,15 @@ export const CallPover = ({ type }: { type: "calling" | "receiving" }) => {
             <div>Waiting for them to accept the call</div>
           ) : (
             <div>
-              <PhoneForwarded className="animate-pulse" color="green" />
+              <PhoneForwarded
+                onClick={handleAcceptCall}
+                className="animate-pulse"
+                color="green"
+              />
             </div>
           )}
         </div>
+        <video ref={videoRef} autoPlay />
       </DialogContent>
     </Dialog>
   );
